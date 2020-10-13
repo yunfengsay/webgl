@@ -124,7 +124,24 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.DataChanger = exports.GlobalMap = void 0;
-exports.GlobalMap = {};
+exports.GlobalMap = new Proxy({}, {
+  get: function get(target, funcName) {
+    if (funcName.startsWith('set')) {
+      var keyname_1 = funcName.split('set')[1];
+      return function () {
+        return exports.GlobalMap[keyname_1] = arguments[0];
+      };
+    }
+
+    if (funcName.startsWith('get')) {
+      var keyname = funcName.split('get')[1];
+      return exports.GlobalMap[keyname];
+    }
+
+    return null;
+  }
+});
+window.GlobalMap = exports.GlobalMap;
 
 exports.GlobalMap.set = function (key, value) {
   return exports.GlobalMap[key] = value;
@@ -155,7 +172,7 @@ var globalMap_1 = require("./globalMap");
 exports.Render = function (dom, props) {
   var canvas = document.createElement("canvas");
   canvas.style = props.style;
-  globalMap_1.DataChanger.setCanvasInstace(canvas);
+  globalMap_1.GlobalMap.setCanvasInstace(canvas);
   var gl = canvas.getContext("webgl"); // 确认WebGL支持性
 
   if (!gl) {
@@ -163,13 +180,13 @@ exports.Render = function (dom, props) {
     return;
   }
 
-  globalMap_1.DataChanger.setCanvasInstace(gl); // 使用完全不透明的黑色清除所有图像
+  globalMap_1.GlobalMap.setCanvasInstace(gl); // 使用完全不透明的黑色清除所有图像
 
   gl.clearColor(0.0, 0.0, 0.0, 1.0); // 用上面指定的颜色清除缓冲区
 
   gl.clear(gl.COLOR_BUFFER_BIT);
   document.addEventListener("DOMContentLoaded", function () {
-    if (typeof dom === 'pbject') {
+    if (typeof dom === 'bject') {
       dom.appendChild(canvas);
       return;
     }
