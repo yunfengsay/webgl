@@ -1,0 +1,1 @@
+{"version":3,"sources":["style.less"],"names":[],"mappings":"AAAA;EACE,SAAA;EACA,UAAA;EACA,SAAA;;AAHF,IAIE;EACE,SAAA;EACA,UAAA;EACA,SAAA","file":"style.2cf34713.css","sourceRoot":"../demo","sourcesContent":["html {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  body {\n    margin: 0;\n    padding: 0;\n    border: 0;\n  }\n}\n"]}
