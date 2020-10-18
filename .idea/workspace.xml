@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="3a2618a5-7ded-4ef1-960f-1e9109736d83" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/dist/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/style.2cf34713.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/style.2cf34713.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/style.2cf34713.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/dist/style.2cf34713.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1j2DvIwc8RItBiKNJESaxhZOh6o" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3a2618a5-7ded-4ef1-960f-1e9109736d83" name="Default Changelist" comment="" />
+      <created>1602993521533</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1602993521533</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="730" y="751" width="557" height="704" key="#HTTP_Proxy" timestamp="1602993598710">
+      <screen x="72" y="33" width="3768" height="2127" />
+    </state>
+    <state x="730" y="751" width="557" height="704" key="#HTTP_Proxy/72.33.3768.2127@72.33.3768.2127" timestamp="1602993598710" />
+    <state x="503" y="644" width="1271" height="912" key="SettingsEditor" timestamp="1602993701432">
+      <screen x="72" y="33" width="3768" height="2127" />
+    </state>
+    <state x="503" y="644" width="1271" height="912" key="SettingsEditor/72.33.3768.2127@72.33.3768.2127" timestamp="1602993701432" />
+    <state x="485" y="717" width="1037" height="766" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1602994011959">
+      <screen x="72" y="33" width="3768" height="2127" />
+    </state>
+    <state x="485" y="717" width="1037" height="766" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/72.33.3768.2127@72.33.3768.2127" timestamp="1602994011959" />
+  </component>
+</project>

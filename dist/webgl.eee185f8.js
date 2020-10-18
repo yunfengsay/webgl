@@ -117,79 +117,156 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"../node_modules/_parcel@1.12.4@parcel/src/builtins/bundle-url.js":[function(require,module,exports) {
-var bundleURL = null;
+})({"../src/globalMap.ts":[function(require,module,exports) {
+"use strict";
 
-function getBundleURLCached() {
-  if (!bundleURL) {
-    bundleURL = getBundleURL();
-  }
-
-  return bundleURL;
-}
-
-function getBundleURL() {
-  // Attempt to find the URL of the current script and use that as the base URL
-  try {
-    throw new Error();
-  } catch (err) {
-    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
-
-    if (matches) {
-      return getBaseURL(matches[0]);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.DataChanger = exports.GlobalMap = void 0;
+exports.GlobalMap = new Proxy({}, {
+  get: function get(target, funcName) {
+    if (funcName.startsWith('set')) {
+      var keyname_1 = funcName.split('set')[1];
+      return function () {
+        return exports.GlobalMap[keyname_1] = arguments[0];
+      };
     }
+
+    if (funcName.startsWith('get')) {
+      var keyname = funcName.split('get')[1];
+      return exports.GlobalMap[keyname];
+    }
+
+    return null;
   }
+});
+window.GlobalMap = exports.GlobalMap;
 
-  return '/';
-}
+exports.GlobalMap.set = function (key, value) {
+  return exports.GlobalMap[key] = value;
+};
 
-function getBaseURL(url) {
-  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
-}
+exports.GlobalMap.get = function (key) {
+  return exports.GlobalMap[key];
+};
 
-exports.getBundleURL = getBundleURLCached;
-exports.getBaseURL = getBaseURL;
-},{}],"../node_modules/_parcel@1.12.4@parcel/src/builtins/css-loader.js":[function(require,module,exports) {
-var bundle = require('./bundle-url');
+exports.DataChanger = {
+  setCanvasInstace: function setCanvasInstace(data) {
+    return exports.GlobalMap.set('canvasInstance', data);
+  },
+  setCanvasCtx: function setCanvasCtx(data) {
+    return exports.GlobalMap.set('canvasCtx', data);
+  }
+};
+},{}],"../src/index.ts":[function(require,module,exports) {
+"use strict";
 
-function updateLink(link) {
-  var newLink = link.cloneNode();
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Render = void 0;
 
-  newLink.onload = function () {
-    link.remove();
-  };
+var globalMap_1 = require("./globalMap");
 
-  newLink.href = link.href.split('?')[0] + '?' + Date.now();
-  link.parentNode.insertBefore(newLink, link.nextSibling);
-}
+exports.Render = function (dom, props) {
+  var canvas = document.createElement("canvas");
+  canvas.style = props.style;
+  globalMap_1.GlobalMap.setCanvasInstace(canvas);
+  var gl = canvas.getContext("webgl"); // 确认WebGL支持性
 
-var cssTimeout = null;
-
-function reloadCSS() {
-  if (cssTimeout) {
+  if (!gl) {
+    alert("无法初始化WebGL，你的浏览器、操作系统或硬件等可能不支持WebGL。");
     return;
   }
 
-  cssTimeout = setTimeout(function () {
-    var links = document.querySelectorAll('link[rel="stylesheet"]');
+  globalMap_1.GlobalMap.setCanvasInstace(gl); // 使用完全不透明的黑色清除所有图像
 
-    for (var i = 0; i < links.length; i++) {
-      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
-        updateLink(links[i]);
-      }
+  gl.clearColor(0.0, 0.0, 0.0, 1.0); // 用上面指定的颜色清除缓冲区
+
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  var vertexShader = createShader(gl, VSHADER_SOURCE_CODE, gl.VERTEX_SHADER);
+  var fragmentShader = createShader(gl, FSHADER_SOURCE_CODE, gl.FRAGMENT_SHADER);
+  var program = gl.createProgram();
+  gl.attachShader(program, vertexShader);
+  gl.attachShader(program, fragmentShader);
+  gl.linkProgram(program);
+  gl.useProgram(program);
+  gl.program = program; // 获取顶点的数量
+
+  var n = initVertexBuffers(gl); // 指定设置清空颜色缓冲区时的颜色值。
+
+  gl.clearColor(0.0, 0.0, 0.0, 1.0); // 绘制
+
+  function draw() {
+    // 清空上一次的绘制，因为是逐帧绘制，所以每一次绘制都要清除上次绘制的内容。
+    gl.clear(gl.COLOR_BUFFER_BIT); // 绘制传入的图元
+    // 第一个参数就是图元的类型，上面有说到
+    // 第二个参数是指定从哪个顶点开始
+    // 第三个参数则是顶点的数量
+
+    gl.drawArrays(gl.TRIANGLES, 0, n);
+  }
+
+  draw();
+  document.addEventListener("DOMContentLoaded", function () {
+    if (typeof dom === 'bject') {
+      dom.appendChild(canvas);
+      return;
     }
 
-    cssTimeout = null;
-  }, 50);
+    document.querySelector(dom).appendChild(canvas);
+  });
+};
+
+function createShader(gl, sourceCode, type) {
+  var shader = gl.createShader(type);
+  gl.shaderSource(shader, sourceCode);
+  gl.compileShader(shader);
+  return shader;
 }
 
-module.exports = reloadCSS;
-},{"./bundle-url":"../node_modules/_parcel@1.12.4@parcel/src/builtins/bundle-url.js"}],"style.less":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
+var VSHADER_SOURCE_CODE = "\n\tattribute vec4 a_Position;\n\tvoid main() {\n\t\tgl_Position = a_Position;\n\t}\n";
+var FSHADER_SOURCE_CODE = "\n\tvoid main() {\n\t\tgl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n\t}\n";
 
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-},{"_css_loader":"../node_modules/_parcel@1.12.4@parcel/src/builtins/css-loader.js"}],"../node_modules/_parcel@1.12.4@parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+function initVertexBuffers(gl) {
+  // 定义顶点坐标，格式是Float32Array 类型数组
+  var vertices = new Float32Array([-1, 1, -1, -1, 1, -1]); // 创建缓冲区，缓冲区我的理解是js将数据存在里面，着色器才可以拿的到数据
+
+  var vertexBuffer = gl.createBuffer(); // 绑定缓存区到当前webgl渲染上下文
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer); // 将坐标值传入缓冲区
+
+  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); // 获取a_Position在缓冲区的地址，目的是确定传入的坐标应用到顶点着色器中的哪一个变量
+
+  var a_position = gl.getAttribLocation(gl.program, 'a_Position'); // 给a_position传递坐标值
+  // vertexAttribPointer第一个参数就是接收坐标值的变量位置。
+  // 第二个参数告诉每次取几个坐标
+  // 第三个参数是用于确定数据的格式
+  // 第四个参数 指定当被访问时，固定点数据值是否应该被归一化（GL_TRUE）或者直接转换为固定点值（GL_FALSE）；
+  // 第五个参数说明数据存储的方式，单位是字节。0表示一个属性的数据是连续存放的，非0则表示同一个属性在数据中的间隔大小。也就是一个顶点的数据占用了多少字节。
+  // 第六个参数属性在缓冲区的偏移值，单位是字节。0表示从头开始读取。
+  // 第四，五，六个参数，我暂时还不能理解是干嘛的。。。
+
+  gl.vertexAttribPointer(a_position, 2, gl.FLOAT, false, 0, 0); // 让顶点着色器的a_position可以从缓冲区中拿数据
+
+  gl.enableVertexAttribArray(a_position); // 这里返回的3是为了指定有多少个顶点
+
+  return 3;
+}
+},{"./globalMap":"../src/globalMap.ts"}],"../index.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var index_1 = require("./src/index");
+
+index_1.Render('#root', {
+  style: "width: 100vw;height: 100vh"
+});
+},{"./src/index":"../src/index.ts"}],"../node_modules/_parcel@1.12.4@parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -393,5 +470,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["../node_modules/_parcel@1.12.4@parcel/src/builtins/hmr-runtime.js"], null)
-//# sourceMappingURL=/style.2cf34713.js.map
+},{}]},{},["../node_modules/_parcel@1.12.4@parcel/src/builtins/hmr-runtime.js","../index.ts"], null)
+//# sourceMappingURL=/webgl.eee185f8.js.map
